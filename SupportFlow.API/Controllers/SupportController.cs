@@ -18,10 +18,19 @@ public class SupportController : ControllerBase
     [HttpPost("ask")]
     public async Task<IActionResult> Ask([FromBody] ChatRequest request)
     {
-        var response = await _supportAgent.AskAsync(
-    request.SessionId,
-    request.Message);
+        if (string.IsNullOrWhiteSpace(request.Message))
+        {
+            return BadRequest("Message cannot be empty.");
+        }
 
-        return Ok(response);
+        var response = await _supportAgent.AskAsync(
+            request.SessionId,
+            request.Message);
+
+        return Ok(new
+        {
+            sessionId = request.SessionId,
+            message = response
+        });
     }
 }
