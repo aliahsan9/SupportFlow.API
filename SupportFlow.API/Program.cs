@@ -1,5 +1,6 @@
 using SupportFlow.API.Agents;
 using SupportFlow.API.Services;
+using SupportFlow.API.Workflows;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,7 @@ builder.Services.AddSingleton<BillingAgent>();
 builder.Services.AddSingleton<TechnicalAgent>();
 
 builder.Services.AddSingleton<MultiAgentService>();
+builder.Services.AddSingleton<SupportWorkflowService>();
 
 var app = builder.Build();
 
