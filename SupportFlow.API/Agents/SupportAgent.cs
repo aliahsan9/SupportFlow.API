@@ -79,7 +79,8 @@ public class SupportAgent
         {
             Console.WriteLine($"Text: '{response.Text}'");
             Console.WriteLine($"Text null: {response.Text == null}");
-            Console.WriteLine($"Text empty: {string.IsNullOrWhiteSpace(response.Text)}");
+            Console.WriteLine(
+                $"Text empty: {string.IsNullOrWhiteSpace(response.Text)}");
         }
 
         Console.WriteLine("====================================");

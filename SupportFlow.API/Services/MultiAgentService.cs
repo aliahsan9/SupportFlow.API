@@ -21,7 +21,9 @@ public class MultiAgentService
         _technicalAgent = technicalAgent;
     }
 
-    public async Task<string> AskAsync(string message)
+    public async Task<string> AskAsync(
+        string sessionId,
+        string message)
     {
         var agentType =
             await _coordinator.DetermineAgentAsync(message);
@@ -29,7 +31,9 @@ public class MultiAgentService
         return agentType switch
         {
             "SUPPORT" =>
-                await _supportAgent.AskAsync(message),
+                await _supportAgent.AskAsync(
+                    sessionId,
+                    message),
 
             "BILLING" =>
                 await _billingAgent.AskAsync(message),
