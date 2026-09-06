@@ -27,13 +27,31 @@ public class SupportAgent
 
             You can answer general questions.
 
-            When a user asks about a support ticket,
-            use the GetTicketStatus tool to retrieve
-            the ticket information.
+            When the user asks about a support ticket,
+            you MUST use the GetTicketStatus tool.
 
             Never invent ticket information.
+
+            If the user provides a ticket number,
+            extract the numeric ticket ID and call the tool.
+
+            Always provide a text response to the user.
             """,
             name: "SupportAgent",
             tools: [ticketTool]);
     }
+
+    public async Task<string> AskAsync(
+        string sessionId,
+        string message)
+    {
+        var response = await _agent.RunAsync(message);
+
+        Console.WriteLine("========== AGENT RESPONSE ==========");
+        Console.WriteLine($"Text: '{response.Text}'");
+        Console.WriteLine("====================================");
+
+        return response.Text;
+    }
 }
+
