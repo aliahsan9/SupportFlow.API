@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SupportFlow.API.Agents;
 using SupportFlow.API.Models;
+using SupportFlow.API.Services;
 
 namespace SupportFlow.API.Controllers;
 
@@ -8,29 +8,25 @@ namespace SupportFlow.API.Controllers;
 [Route("api/[controller]")]
 public class SupportController : ControllerBase
 {
-    private readonly SupportAgent _supportAgent;
+    private readonly MultiAgentService _multiAgentService;
 
-    public SupportController(SupportAgent supportAgent)
+    public SupportController(MultiAgentService multiAgentService)
     {
-        _supportAgent = supportAgent;
+        _multiAgentService = multiAgentService;
     }
 
     [HttpPost("ask")]
-    public async Task<IActionResult> Ask([FromBody] ChatRequest request)
+    public async Task<IActionResult> Ask(
+        [FromBody] ChatRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Message))
         {
             return BadRequest("Message cannot be empty.");
         }
 
-        var response = await _supportAgent.AskAsync(
-            request.SessionId,
-            request.Message);
+        var response =
+            await _multiAgentService.AskAsync(request.Message);
 
-        return Ok(new
-        {
-            sessionId = request.SessionId,
-            message = response
-        });
+        return Ok(response);
     }
 }
