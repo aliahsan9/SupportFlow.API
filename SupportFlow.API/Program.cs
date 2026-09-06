@@ -1,4 +1,5 @@
 using SupportFlow.API.Agents;
+using SupportFlow.API.Executors;
 using SupportFlow.API.Services;
 using SupportFlow.API.Workflows;
 
@@ -19,6 +20,11 @@ builder.Services.AddSingleton<TechnicalAgent>();
 builder.Services.AddSingleton<MultiAgentService>();
 builder.Services.AddSingleton<SupportWorkflowService>();
 
+builder.Services.AddSingleton<RequestExecutor>();
+builder.Services.AddSingleton<CoordinatorExecutor>();
+builder.Services.AddSingleton<ResponseExecutor>();
+
+builder.Services.AddSingleton<SupportWorkflow>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
