@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SupportFlow.API.Models;
-using SupportFlow.API.Services;
+using SupportFlow.API.Workflows;
 
 namespace SupportFlow.API.Controllers;
 
@@ -8,11 +8,12 @@ namespace SupportFlow.API.Controllers;
 [Route("api/[controller]")]
 public class SupportController : ControllerBase
 {
-    private readonly MultiAgentService _multiAgentService;
+    private readonly SupportWorkflowService _workflow;
 
-    public SupportController(MultiAgentService multiAgentService)
+    public SupportController(
+        SupportWorkflowService workflow)
     {
-        _multiAgentService = multiAgentService;
+        _workflow = workflow;
     }
 
     [HttpPost("ask")]
@@ -24,9 +25,15 @@ public class SupportController : ControllerBase
             return BadRequest("Message cannot be empty.");
         }
 
-        var response =
-            await _multiAgentService.AskAsync(request.Message);
+        var workflowRequest = new SupportWorkflowRequest
+        {
+            SessionId = request.SessionId,
+            Message = request.Message
+        };
 
-        return Ok(response);
+        var result =
+            await _workflow.RunAsync(workflowRequest);
+
+        return Ok(result);
     }
 }
