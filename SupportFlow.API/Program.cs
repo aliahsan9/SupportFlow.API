@@ -10,6 +10,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<SupportAgent>();
 builder.Services.AddSingleton<TicketService>();
+builder.Services.AddSingleton<CoordinatorAgent>();
+builder.Services.AddSingleton<SupportAgent>();
+builder.Services.AddSingleton<BillingAgent>();
+builder.Services.AddSingleton<TechnicalAgent>();
+
+builder.Services.AddSingleton<MultiAgentService>();
 
 var app = builder.Build();
 
