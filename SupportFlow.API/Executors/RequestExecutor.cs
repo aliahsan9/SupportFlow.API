@@ -2,16 +2,17 @@
 
 namespace SupportFlow.API.Executors;
 
-public sealed class RequestExecutor : Executor
+public sealed class RequestExecutor : Executor<string, string>
 {
     public RequestExecutor()
         : base("RequestExecutor")
     {
     }
 
-    public async ValueTask HandleAsync(
+    public override async ValueTask<string> HandleAsync(
         string message,
-        IWorkflowContext context)
+        IWorkflowContext context,
+        CancellationToken cancellationToken = default)
     {
         Console.WriteLine();
         Console.WriteLine("=================================");
@@ -19,6 +20,6 @@ public sealed class RequestExecutor : Executor
         Console.WriteLine("=================================");
         Console.WriteLine($"Incoming message: {message}");
 
-        await context.SendMessageAsync(message);
+        return message;
     }
 }

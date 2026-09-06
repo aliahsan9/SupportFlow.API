@@ -3,7 +3,7 @@ using SupportFlow.API.Agents;
 
 namespace SupportFlow.API.Executors;
 
-public sealed class CoordinatorExecutor : Executor
+public sealed class CoordinatorExecutor : Executor<string, AgentSelection>
 {
     private readonly CoordinatorAgent _coordinatorAgent;
 
@@ -14,9 +14,10 @@ public sealed class CoordinatorExecutor : Executor
         _coordinatorAgent = coordinatorAgent;
     }
 
-    public async ValueTask HandleAsync(
+    public override async ValueTask<AgentSelection> HandleAsync(
         string message,
-        IWorkflowContext context)
+        IWorkflowContext context,
+        CancellationToken cancellationToken = default)
     {
         Console.WriteLine();
         Console.WriteLine("=================================");
@@ -28,11 +29,10 @@ public sealed class CoordinatorExecutor : Executor
 
         Console.WriteLine($"Selected agent: {agent}");
 
-        await context.SendMessageAsync(
-            new AgentSelection
-            {
-                Agent = agent,
-                Message = message
-            });
+        return new AgentSelection
+        {
+            Agent = agent,
+            Message = message
+        };
     }
 }

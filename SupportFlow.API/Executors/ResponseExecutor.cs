@@ -2,16 +2,17 @@
 
 namespace SupportFlow.API.Executors;
 
-public sealed class ResponseExecutor : Executor
+public sealed class ResponseExecutor : Executor<AgentSelection, string>
 {
     public ResponseExecutor()
         : base("ResponseExecutor")
     {
     }
 
-    public async ValueTask HandleAsync(
+    public override async ValueTask<string> HandleAsync(
         AgentSelection selection,
-        IWorkflowContext context)
+        IWorkflowContext context,
+        CancellationToken cancellationToken = default)
     {
         Console.WriteLine();
         Console.WriteLine("=================================");
@@ -21,7 +22,6 @@ public sealed class ResponseExecutor : Executor
         Console.WriteLine(
             $"Agent selected: {selection.Agent}");
 
-        await context.SendMessageAsync(
-            $"Agent selected: {selection.Agent}");
+        return $"Agent selected: {selection.Agent}";
     }
 }
