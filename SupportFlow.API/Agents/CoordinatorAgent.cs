@@ -18,7 +18,7 @@ public class CoordinatorAgent
             instructions: """
             You are the SupportFlow Coordinator Agent.
 
-            Your job is to classify the user's request.
+            Your ONLY job is to classify the user's request.
 
             Available specialists:
 
@@ -26,6 +26,7 @@ public class CoordinatorAgent
             - Tickets
             - Ticket status
             - General customer support
+            - Password and account assistance
 
             BILLING
             - Payments
@@ -35,13 +36,13 @@ public class CoordinatorAgent
             - Billing problems
 
             TECHNICAL
-            - Login problems
             - Application errors
             - Configuration problems
             - Connection problems
             - Technical troubleshooting
+            - Application crashes
 
-            Respond with ONLY one of these values:
+            Respond with ONLY one of these exact values:
 
             SUPPORT
             BILLING
@@ -49,6 +50,8 @@ public class CoordinatorAgent
 
             Do not provide an explanation.
             Do not answer the user's question.
+            Do not use markdown.
+            Do not use punctuation.
             Only return the specialist name.
             """);
     }
@@ -57,8 +60,20 @@ public class CoordinatorAgent
     {
         var response = await _agent.RunAsync(message);
 
-        return response.ToString()
+        var result = response
+            .ToString()
             .Trim()
             .ToUpperInvariant();
+
+        if (result.Contains("BILLING"))
+            return "BILLING";
+
+        if (result.Contains("TECHNICAL"))
+            return "TECHNICAL";
+
+        if (result.Contains("SUPPORT"))
+            return "SUPPORT";
+
+        return "SUPPORT";
     }
 }
