@@ -11,4 +11,4 @@ public sealed class WorkflowEvent
     public string? Message { get; init; }
 
     public DateTime TimestampUtc { get; init; } = DateTime.UtcNow;
-}
+} 

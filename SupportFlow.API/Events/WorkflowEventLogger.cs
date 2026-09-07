@@ -22,4 +22,4 @@ public sealed class WorkflowEventLogger
             workflowEvent.Message,
             workflowEvent.TimestampUtc);
     }
-}
+} 
