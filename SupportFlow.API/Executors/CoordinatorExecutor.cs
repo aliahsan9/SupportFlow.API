@@ -24,6 +24,8 @@ public sealed class CoordinatorExecutor : Executor<string, AgentSelection>
         Console.WriteLine("COORDINATOR EXECUTOR");
         Console.WriteLine("=================================");
 
+        Console.WriteLine($"Incoming message: {message}");
+
         var agent =
             await _coordinatorAgent.DetermineAgentAsync(message);
 
