@@ -1,16 +1,18 @@
 ﻿using Microsoft.Agents.AI.Workflows;
+using SupportFlow.API.Models;
 
 namespace SupportFlow.API.Executors;
 
-public sealed class RequestExecutor : Executor<string, string>
+public sealed class RequestExecutor
+    : Executor<WorkflowRequest, WorkflowRequest>
 {
     public RequestExecutor()
         : base("RequestExecutor")
     {
     }
 
-    public override async ValueTask<string> HandleAsync(
-        string message,
+    public override ValueTask<WorkflowRequest> HandleAsync(
+        WorkflowRequest request,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
@@ -18,8 +20,10 @@ public sealed class RequestExecutor : Executor<string, string>
         Console.WriteLine("=================================");
         Console.WriteLine("REQUEST EXECUTOR");
         Console.WriteLine("=================================");
-        Console.WriteLine($"Incoming message: {message}");
 
-        return message;
+        Console.WriteLine($"Session ID: {request.SessionId}");
+        Console.WriteLine($"Message: {request.Message}");
+
+        return ValueTask.FromResult(request);
     }
 }

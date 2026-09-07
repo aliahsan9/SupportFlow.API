@@ -1,9 +1,11 @@
 ﻿using Microsoft.Agents.AI.Workflows;
 using SupportFlow.API.Agents;
+using SupportFlow.API.Models;
 
 namespace SupportFlow.API.Executors;
 
-public sealed class CoordinatorExecutor : Executor<string, AgentSelection>
+public sealed class CoordinatorExecutor
+    : Executor<WorkflowRequest, AgentSelection>
 {
     private readonly CoordinatorAgent _coordinatorAgent;
 
@@ -15,7 +17,7 @@ public sealed class CoordinatorExecutor : Executor<string, AgentSelection>
     }
 
     public override async ValueTask<AgentSelection> HandleAsync(
-        string message,
+        WorkflowRequest request,
         IWorkflowContext context,
         CancellationToken cancellationToken = default)
     {
@@ -24,17 +26,19 @@ public sealed class CoordinatorExecutor : Executor<string, AgentSelection>
         Console.WriteLine("COORDINATOR EXECUTOR");
         Console.WriteLine("=================================");
 
-        Console.WriteLine($"Incoming message: {message}");
+        Console.WriteLine($"Incoming message: {request.Message}");
 
         var agent =
-            await _coordinatorAgent.DetermineAgentAsync(message);
+            await _coordinatorAgent.DetermineAgentAsync(
+                request.Message);
 
         Console.WriteLine($"Selected agent: {agent}");
 
         return new AgentSelection
         {
             Agent = agent,
-            Message = message
+            Message = request.Message,
+            SessionId = request.SessionId
         };
     }
 }

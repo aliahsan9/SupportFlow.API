@@ -18,11 +18,17 @@ public class SupportController : ControllerBase
 
     [HttpPost("ask")]
     public async Task<IActionResult> Ask(
-        [FromBody] ChatRequest request)
+        [FromBody] ChatRequest request,
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.Message))
         {
             return BadRequest("Message cannot be empty.");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.SessionId))
+        {
+            return BadRequest("SessionId cannot be empty.");
         }
 
         var workflowRequest = new SupportWorkflowRequest
@@ -31,8 +37,9 @@ public class SupportController : ControllerBase
             Message = request.Message
         };
 
-        var result =
-            await _workflow.RunAsync(workflowRequest);
+        var result = await _workflow.RunAsync(
+            workflowRequest,
+            cancellationToken);
 
         return Ok(result);
     }

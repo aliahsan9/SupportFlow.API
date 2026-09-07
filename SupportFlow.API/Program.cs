@@ -10,21 +10,43 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<SupportAgent>();
+// ==========================================
+// AGENTS
+// ==========================================
+
 builder.Services.AddSingleton<TicketService>();
+
 builder.Services.AddSingleton<CoordinatorAgent>();
 builder.Services.AddSingleton<SupportAgent>();
 builder.Services.AddSingleton<BillingAgent>();
 builder.Services.AddSingleton<TechnicalAgent>();
 
+// ==========================================
+// SERVICES
+// ==========================================
+
 builder.Services.AddSingleton<MultiAgentService>();
 builder.Services.AddSingleton<SupportWorkflowService>();
 
+// ==========================================
+// EXECUTORS
+// ==========================================
+
 builder.Services.AddSingleton<RequestExecutor>();
 builder.Services.AddSingleton<CoordinatorExecutor>();
+
+builder.Services.AddSingleton<SupportExecutor>();
+builder.Services.AddSingleton<BillingExecutor>();
+builder.Services.AddSingleton<TechnicalExecutor>();
+
 builder.Services.AddSingleton<ResponseExecutor>();
 
+// ==========================================
+// WORKFLOW
+// ==========================================
+
 builder.Services.AddSingleton<SupportWorkflow>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

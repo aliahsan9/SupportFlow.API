@@ -1,60 +1,73 @@
-﻿using SupportFlow.API.Agents;
+﻿using Microsoft.Agents.AI.Workflows;
+using SupportFlow.API.Models;
 
 namespace SupportFlow.API.Workflows;
 
 public class SupportWorkflowService
 {
-    private readonly CoordinatorAgent _coordinator;
-    private readonly SupportAgent _supportAgent;
-    private readonly BillingAgent _billingAgent;
-    private readonly TechnicalAgent _technicalAgent;
+    private readonly SupportWorkflow _supportWorkflow;
 
     public SupportWorkflowService(
-        CoordinatorAgent coordinator,
-        SupportAgent supportAgent,
-        BillingAgent billingAgent,
-        TechnicalAgent technicalAgent)
+        SupportWorkflow supportWorkflow)
     {
-        _coordinator = coordinator;
-        _supportAgent = supportAgent;
-        _billingAgent = billingAgent;
-        _technicalAgent = technicalAgent;
+        _supportWorkflow = supportWorkflow;
     }
 
     public async Task<SupportWorkflowResponse> RunAsync(
-        SupportWorkflowRequest request)
+        SupportWorkflowRequest request,
+        CancellationToken cancellationToken = default)
     {
-        var agent =
-            await _coordinator.DetermineAgentAsync(request.Message);
+        Console.WriteLine();
+        Console.WriteLine("=================================");
+        Console.WriteLine("SUPPORT WORKFLOW SERVICE");
+        Console.WriteLine("=================================");
 
-        string response;
+        Console.WriteLine($"Session ID: {request.SessionId}");
+        Console.WriteLine($"Message: {request.Message}");
 
-        switch (agent)
+        var workflowInput = new WorkflowRequest
         {
-            case "SUPPORT":
-                response =
-                    await _supportAgent.AskAsync(
-                        request.SessionId,
-                        request.Message);
-                break;
+            SessionId = request.SessionId,
+            Message = request.Message
+        };
 
-            case "BILLING":
-                response =
-                    await _billingAgent.AskAsync(
-                        request.Message);
-                break;
+        var run = await InProcessExecution.RunAsync(
+            _supportWorkflow.Workflow,
+            workflowInput,
+            request.SessionId,
+            cancellationToken);
 
-            case "TECHNICAL":
-                response =
-                    await _technicalAgent.AskAsync(
-                        request.Message);
-                break;
+        string response = string.Empty;
+        string agent = string.Empty;
 
-            default:
-                response =
-                    "I couldn't determine which specialist should handle your request.";
-                break;
+        foreach (var workflowEvent in run.OutgoingEvents)
+        {
+            Console.WriteLine(
+                $"Workflow event: {workflowEvent.GetType().Name}");
+
+            if (workflowEvent is WorkflowOutputEvent outputEvent)
+            {
+                var output = outputEvent.As<string>();
+
+                if (!string.IsNullOrWhiteSpace(output))
+                {
+                    response = output;
+                }
+            }
         }
+
+        if (string.IsNullOrWhiteSpace(response))
+        {
+            response =
+                "The workflow completed without producing a response.";
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("=================================");
+        Console.WriteLine("WORKFLOW COMPLETED");
+        Console.WriteLine("=================================");
+
+        Console.WriteLine($"Response: {response}");
 
         return new SupportWorkflowResponse
         {
