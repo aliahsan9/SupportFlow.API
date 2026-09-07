@@ -47,6 +47,9 @@ builder.Services.AddSingleton<ResponseExecutor>();
 
 builder.Services.AddSingleton<SupportWorkflow>();
 
+// Event logger 
+builder.Services.AddSingleton<WorkflowEventLogger>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
