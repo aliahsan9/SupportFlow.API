@@ -50,6 +50,7 @@ builder.Services.AddSingleton<SupportWorkflow>();
 
 // Event logger 
 builder.Services.AddSingleton<WorkflowEventLogger>();
+builder.Services.AddSingleton<HumanApprovalService>();
 
 var app = builder.Build();
 
