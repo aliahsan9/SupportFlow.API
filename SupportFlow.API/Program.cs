@@ -1,11 +1,15 @@
+using Microsoft.EntityFrameworkCore;
 using SupportFlow.API.Agents;
+using SupportFlow.API.Data;
 using SupportFlow.API.Events;
 using SupportFlow.API.Executors;
 using SupportFlow.API.Services;
 using SupportFlow.API.Workflows;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddDbContext<SupportFlowDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -51,6 +55,7 @@ builder.Services.AddSingleton<SupportWorkflow>();
 // Event logger 
 builder.Services.AddSingleton<WorkflowEventLogger>();
 builder.Services.AddSingleton<HumanApprovalService>();
+builder.Services.AddScoped<AgentMemoryService>();
 
 var app = builder.Build();
 
