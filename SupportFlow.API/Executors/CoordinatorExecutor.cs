@@ -26,7 +26,10 @@ public sealed class CoordinatorExecutor
         Console.WriteLine("COORDINATOR EXECUTOR");
         Console.WriteLine("=================================");
 
+        Console.WriteLine($"Session ID: {request.SessionId}");
         Console.WriteLine($"Incoming message: {request.Message}");
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         var agent =
             await _coordinatorAgent.DetermineAgentAsync(

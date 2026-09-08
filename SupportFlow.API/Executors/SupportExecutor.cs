@@ -3,7 +3,8 @@ using SupportFlow.API.Agents;
 
 namespace SupportFlow.API.Executors;
 
-public sealed class SupportExecutor : Executor<AgentSelection, string>
+public sealed class SupportExecutor
+    : Executor<AgentSelection, string>
 {
     private readonly SupportAgent _supportAgent;
 
@@ -25,7 +26,10 @@ public sealed class SupportExecutor : Executor<AgentSelection, string>
         Console.WriteLine("=================================");
 
         Console.WriteLine($"Agent: {selection.Agent}");
+        Console.WriteLine($"Session ID: {selection.SessionId}");
         Console.WriteLine($"Message: {selection.Message}");
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         var response = await _supportAgent.AskAsync(
             selection.SessionId,

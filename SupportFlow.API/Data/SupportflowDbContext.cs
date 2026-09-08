@@ -1,10 +1,9 @@
-﻿using Microsoft.Agents.AI;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SupportFlow.API.Models;
 
 namespace SupportFlow.API.Data;
 
-public class SupportFlowDbContext : DbContext
+public sealed class SupportFlowDbContext : DbContext
 {
     public SupportFlowDbContext(
         DbContextOptions<SupportFlowDbContext> options)
@@ -12,16 +11,31 @@ public class SupportFlowDbContext : DbContext
     {
     }
 
-    public DbSet<AgentMemory> AgentMemories => Set<AgentMemory>();
+    // ==========================================
+    // PERSISTENT MEMORY
+    // ==========================================
+
+    public DbSet<AgentMemory> AgentMemories =>
+        Set<AgentMemory>();
+
+    // ==========================================
+    // KNOWLEDGE BASE
+    // ==========================================
+
     public DbSet<KnowledgeDocument> KnowledgeDocuments =>
-    Set<KnowledgeDocument>();
+        Set<KnowledgeDocument>();
 
     public DbSet<KnowledgeChunk> KnowledgeChunks =>
         Set<KnowledgeChunk>();
+
     protected override void OnModelCreating(
-    ModelBuilder modelBuilder)
+        ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // ==========================================
+        // AGENT MEMORY
+        // ==========================================
 
         modelBuilder.Entity<AgentMemory>(entity =>
         {
@@ -47,6 +61,11 @@ public class SupportFlowDbContext : DbContext
                 x.Key
             });
         });
+
+        // ==========================================
+        // KNOWLEDGE DOCUMENT
+        // ==========================================
+
         modelBuilder.Entity<KnowledgeDocument>(entity =>
         {
             entity.HasKey(x => x.Id);
@@ -67,6 +86,10 @@ public class SupportFlowDbContext : DbContext
                 .HasForeignKey(x => x.KnowledgeDocumentId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
+        // ==========================================
+        // KNOWLEDGE CHUNK
+        // ==========================================
 
         modelBuilder.Entity<KnowledgeChunk>(entity =>
         {

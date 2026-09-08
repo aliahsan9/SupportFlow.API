@@ -3,7 +3,7 @@ using SupportFlow.API.Models;
 
 namespace SupportFlow.API.Workflows;
 
-public class SupportWorkflowService
+public sealed class SupportWorkflowService
 {
     private readonly SupportWorkflow _supportWorkflow;
 
@@ -17,6 +17,22 @@ public class SupportWorkflowService
         SupportWorkflowRequest request,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
+        if (string.IsNullOrWhiteSpace(request.SessionId))
+        {
+            throw new ArgumentException(
+                "SessionId is required.",
+                nameof(request));
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Message))
+        {
+            throw new ArgumentException(
+                "Message is required.",
+                nameof(request));
+        }
+
         Console.WriteLine();
         Console.WriteLine("=================================");
         Console.WriteLine("SUPPORT WORKFLOW SERVICE");
@@ -38,7 +54,6 @@ public class SupportWorkflowService
             cancellationToken);
 
         string response = string.Empty;
-        string agent = string.Empty;
 
         foreach (var workflowEvent in run.OutgoingEvents)
         {
@@ -72,7 +87,7 @@ public class SupportWorkflowService
         return new SupportWorkflowResponse
         {
             SessionId = request.SessionId,
-            Agent = agent,
+            Agent = string.Empty,
             Response = response
         };
     }

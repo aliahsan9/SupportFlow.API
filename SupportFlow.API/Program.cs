@@ -7,9 +7,20 @@ using SupportFlow.API.Services;
 using SupportFlow.API.Workflows;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ==========================================
+// DATABASE
+// ==========================================
+
 builder.Services.AddDbContext<SupportFlowDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Configuration.GetConnectionString(
+            "DefaultConnection")));
+
+// ==========================================
+// CONTROLLERS / SWAGGER
+// ==========================================
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -27,35 +38,65 @@ builder.Services.AddSingleton<BillingAgent>();
 builder.Services.AddSingleton<TechnicalAgent>();
 
 // ==========================================
-// SERVICES
+// APPLICATION SERVICES
 // ==========================================
 
 builder.Services.AddSingleton<MultiAgentService>();
-builder.Services.AddSingleton<SupportWorkflowService>();
+
+// ==========================================
+// PERSISTENT MEMORY
+// ==========================================
+
+// AgentMemoryService uses SupportFlowDbContext,
+// therefore it must remain Scoped.
+
+builder.Services.AddScoped<AgentMemoryService>();
+
+// ==========================================
+// HUMAN-IN-THE-LOOP
+// ==========================================
+
+// Uses in-memory state for Milestone 11.
+
+builder.Services.AddSingleton<HumanApprovalService>();
+
+// ==========================================
+// WORKFLOW EVENTS
+// ==========================================
+
+builder.Services.AddSingleton<WorkflowEventLogger>();
 
 // ==========================================
 // EXECUTORS
 // ==========================================
 
-builder.Services.AddSingleton<RequestExecutor>();
-builder.Services.AddSingleton<CoordinatorExecutor>();
+// Workflow-related components are Scoped so that
+// future scoped services such as Memory/RAG can safely
+// be injected into them.
 
-builder.Services.AddSingleton<SupportExecutor>();
-builder.Services.AddSingleton<BillingExecutor>();
-builder.Services.AddSingleton<TechnicalExecutor>();
+builder.Services.AddScoped<RequestExecutor>();
 
-builder.Services.AddSingleton<ResponseExecutor>();
+builder.Services.AddScoped<CoordinatorExecutor>();
+
+builder.Services.AddScoped<SupportExecutor>();
+
+builder.Services.AddScoped<BillingExecutor>();
+
+builder.Services.AddScoped<TechnicalExecutor>();
+
+builder.Services.AddScoped<ResponseExecutor>();
 
 // ==========================================
 // WORKFLOW
 // ==========================================
 
-builder.Services.AddSingleton<SupportWorkflow>();
+builder.Services.AddScoped<SupportWorkflow>();
 
-// Event logger 
-builder.Services.AddSingleton<WorkflowEventLogger>();
-builder.Services.AddSingleton<HumanApprovalService>();
-builder.Services.AddScoped<AgentMemoryService>();
+builder.Services.AddScoped<SupportWorkflowService>();
+
+// ==========================================
+// APPLICATION
+// ==========================================
 
 var app = builder.Build();
 
